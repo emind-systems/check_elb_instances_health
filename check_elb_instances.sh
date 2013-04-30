@@ -19,12 +19,11 @@ CMD=/opt/aws/bin/elb-describe-instance-health
 OPT="--region ${AWSRegion} -I ${AWSAccessKeyId} -S ${AWSSecretKey} --lb ${LB_NAME}"
 TMP=/tmp/$$
 
-OUTPUT=$(${CMD} ${OPT} > ${TMP})
+$(${CMD} ${OPT} > ${TMP})
 if [ $? -eq 0 ]; then
 
-        STATE_LIST=$(cat ${TMP} | awk '{print $3}')
-        IN_SERVICE_COUNT=$(echo ${STATE_LIST} | grep InService |wc -w)
-        TOTAL_COUNT=$(echo ${STATE_LIST} | wc -w)
+        IN_SERVICE_COUNT=$(cat ${TMP} | awk '{print $3}' | grep InService |wc -w)
+        TOTAL_COUNT=$(cat ${TMP} | awk '{print $3}' | wc -w)
 
         if [ ${TOTAL_COUNT} -eq ${IN_SERVICE_COUNT} ]; then
                 NAGIOS_STATE=OK
@@ -36,11 +35,11 @@ if [ $? -eq 0 ]; then
                 NAGIOS_STATE=WARNING
                 EXIT_CODE=1
         fi
-        echo "ELB-Instances-Health:${NAGIOS_STATE}: ELB:${LB_NAME} Total:${TOTAL_COUNT} Healthy:${IN_SERVICE_COUNT}"        
+        echo "ELB-Instances-Health:${NAGIOS_STATE}: ELB:${LB_NAME} Total:${TOTAL_COUNT} Healthy:${IN_SERVICE_COUNT}"
 else
         echo "Usage: $0 AWSAccessKeyId AWSSecretKey AWSRegion LB_NAME"
         echo "Failed to retrieve ELB Instances health from AWS"
-        EXIT_CODE=99		
+        EXIT_CODE=99
 fi
 
 rm ${TMP}
