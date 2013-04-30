@@ -11,6 +11,8 @@ AWSAccessKeyId=$1
 AWSSecretKey=$2
 AWSRegion=$3
 LB_NAME=$4
+
+JAVA_HOME=/usr/lib/jvm/jre
 CMD=/opt/aws/bin/elb-describe-instance-health
 OPT="--region ${AWSRegion} -I ${AWSAccessKeyId} -S ${AWSSecretKey} --lb ${LB_NAME}"
 TMP=/tmp/$$
