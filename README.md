@@ -7,7 +7,7 @@ Usage: ./check_elb_instances.sh AWSAccessKeyId AWSSecretKey AWSRegion ELB_NAME
 
 Output: ELB-Instances-Health:OK: ELB:MyTestELB Total:1 Healthy:1
 
-
+==========================
 
 Copyright 2013 Emind Systems Ltd - htttp://www.emind.co
 This file is part of Emind Systems DevOps Tool set.
