@@ -52,7 +52,7 @@ if [ $? -eq 0 ]; then
                 NAGIOS_STATE=WARNING
                 EXIT_CODE=1
         fi
-        echo "ELB-Instances-Health:${NAGIOS_STATE}: ELB:${LB_NAME} Total:${TOTAL_COUNT} Healthy:${IN_SERVICE_COUNT}"
+        echo "${NAGIOS_STATE}: ELB:${LB_NAME} Total:${TOTAL_COUNT} Healthy:${IN_SERVICE_COUNT} | Total=${TOTAL_COUNT} Healthy=${IN_SERVICE_COUNT}"
 else
         echo "Failed to retrieve ELB Instances health from AWS"
         EXIT_CODE=99
