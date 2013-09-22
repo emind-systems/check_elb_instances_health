@@ -39,10 +39,8 @@ JSON=$(${CMD} ${OPT})
 
 if [ $? -eq 0 ]; then
 
-        #IN_SERVICE_COUNT=$(cat ${TMP} | awk '{print $3}' | grep InService |wc -w)
         IN_SERVICE_COUNT=$(echo ${JSON} | jq -c '.InstanceStates[].State' | grep InService |wc -l)
         TOTAL_COUNT=$(echo ${JSON} | jq -c '.InstanceStates[].State' | wc -l)
-        #TOTAL_COUNT=$(cat ${TMP} | awk '{print $3}' | wc -w)
 
         if [ ${TOTAL_COUNT} -eq ${IN_SERVICE_COUNT} ]; then
                 NAGIOS_STATE=OK
