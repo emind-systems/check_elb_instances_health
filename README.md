@@ -7,7 +7,7 @@ Usage:
 
   ./check_elb_instances.sh AWSAccessKeyId AWSSecretKey AWSRegion ELB_NAME
   
-  ./check_elb_instances_v2 -k <WS-AccessKeyId> -s <AWS-SecretKey> -r <AWS-Region> -e <LB_NAME>
+  ./check_elb_instances_v2 -k WS-AccessKeyId -s AWS-SecretKey -r AWS-Region -e LB_NAME
 
   Output: OK: ELB:MyTestELB Total:1 Healthy:1
 
