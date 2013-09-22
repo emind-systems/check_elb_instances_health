@@ -3,9 +3,13 @@ check_elb_instances_health
 
 Nagios plugin to check the health of instances behind AWS ELB
 
-Usage: ./check_elb_instances.sh AWSAccessKeyId AWSSecretKey AWSRegion ELB_NAME
+Usage: 
 
-Output: ELB-Instances-Health:OK: ELB:MyTestELB Total:1 Healthy:1
+  ./check_elb_instances.sh AWSAccessKeyId AWSSecretKey AWSRegion ELB_NAME
+  
+  ./check_elb_instances_v2 -k <WS-AccessKeyId> -s <AWS-SecretKey> -r <AWS-Region> -e <LB_NAME>
+
+  Output: OK: ELB:MyTestELB Total:1 Healthy:1
 
 ==========================
 
