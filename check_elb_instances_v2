@@ -39,23 +39,23 @@ JSON=$(${CMD} ${OPT})
 
 if [ $? -eq 0 ]; then
 
-        IN_SERVICE_COUNT=$(echo ${JSON} | jq -c '.InstanceStates[].State' | grep InService |wc -l)
-        TOTAL_COUNT=$(echo ${JSON} | jq -c '.InstanceStates[].State' | wc -l)
+	IN_SERVICE_COUNT=$(echo ${JSON} | jq -c '.InstanceStates[].State' | grep InService |wc -l)
+	TOTAL_COUNT=$(echo ${JSON} | jq -c '.InstanceStates[].State' | wc -l)
 
-        if [ ${TOTAL_COUNT} -eq ${IN_SERVICE_COUNT} ]; then
-                NAGIOS_STATE=OK
-                EXIT_CODE=0
-        elif [ ${IN_SERVICE_COUNT} -eq 0 ]; then
-                NAGIOS_STATE=CRITICAL
-                EXIT_CODE=2
-        elif [ ${IN_SERVICE_COUNT} -lt ${TOTAL_COUNT} ]; then
-                NAGIOS_STATE=WARNING
-                EXIT_CODE=1
-        fi
-        echo "${NAGIOS_STATE}: ELB:${LB_NAME} Total:${TOTAL_COUNT} Healthy:${IN_SERVICE_COUNT} | Total=${TOTAL_COUNT} Healthy=${IN_SERVICE_COUNT}"
+	if [ ${IN_SERVICE_COUNT} -eq 0 ]; then
+			NAGIOS_STATE=CRITICAL
+			EXIT_CODE=2
+	elif [ ${TOTAL_COUNT} -eq ${IN_SERVICE_COUNT} ]; then
+			NAGIOS_STATE=OK
+			EXIT_CODE=0
+	elif [ ${IN_SERVICE_COUNT} -lt ${TOTAL_COUNT} ]; then
+			NAGIOS_STATE=WARNING
+			EXIT_CODE=1
+	fi
+	echo "${NAGIOS_STATE}: ELB:${LB_NAME} Total:${TOTAL_COUNT} Healthy:${IN_SERVICE_COUNT} | Total=${TOTAL_COUNT} Healthy=${IN_SERVICE_COUNT}"
 else
-        echo "Failed to retrieve ELB Instances health from AWS"
-        EXIT_CODE=99
+	echo "Failed to retrieve ELB Instances health from AWS"
+	EXIT_CODE=99
 fi
 
 exit ${EXIT_CODE}
