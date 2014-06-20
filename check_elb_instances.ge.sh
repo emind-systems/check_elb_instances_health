@@ -6,8 +6,7 @@
 # Emind Systems DevOps Tool set is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 # Emind Systems DevOps Tool set is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 # You should have received a copy of the GNU General Public License along with Emind Systems DevOps Tool set. If not, see http://www.gnu.org/licenses/.
-
-while getopts "k:s:e:r:h" arg; do
+while getopts "k:s:r:w:c:" arg; do
         case $arg in
         k)
         export AWS_ACCESS_KEY_ID=$OPTARG
@@ -16,43 +15,56 @@ while getopts "k:s:e:r:h" arg; do
         s)
         export AWS_SECRET_ACCESS_KEY=$OPTARG
         ;;
-
-        e)
-        LB_NAME=$OPTARG
-        ;;
-
         r)
-        AWS_REGION=$OPTARG
+	CMDOPT="$OPT --region $OPTARG"
         ;;
-
-        h)
-        echo "Usage: $0 -k <WS-AccessKeyId> -s <AWS-SecretKey> -r <AWS-Region> -e <LB_NAME>"
+	w)
+	WARNING=$OPTARG
+	;;
+	c)
+	CRITICAL=$OPTARG
+	;;
+        \?)
+        echo "Usage: $0 -k <WS-AccessKeyId> -s <AWS-SecretKey> -r <AWS-Region> <LB_NAME>"
         exit 99
         ;;
       esac
     done
+shift $((OPTIND-1))
+LB_NAME=$1
+
+if [[ -z ${LB_NAME} ]]; then
+        echo "Please specify the ELB name"
+        echo "Usage: $0 -k <WS-AccessKeyId> -s <AWS-SecretKey> -r <AWS-Region> <LB_NAME>"
+        exit 99
+fi
+
 
 CMD="/usr/bin/aws elb describe-instance-health"
-OPT="--region ${AWS_REGION} --load-balancer-name ${LB_NAME}"
+OPT="$OPT --load-balancer-name ${LB_NAME}"
 
 JSON=$(${CMD} ${OPT})
 
-if [ $? -eq 0 ]; then
+
+if [[ $? -eq 0 ]]; then
 
 	IN_SERVICE_COUNT=$(echo ${JSON} | jq -c '.InstanceStates[].State' | grep InService |wc -l)
 	TOTAL_COUNT=$(echo ${JSON} | jq -c '.InstanceStates[].State' | wc -l)
 
-	if [ ${IN_SERVICE_COUNT} -eq 0 ]; then
+	CRITICAL=${CRITICAL:=0}
+	WARNING=${WARNING:=$TOTAL_COUNT}
+
+	if [[ ${IN_SERVICE_COUNT} -le ${CRITICAL} ]]; then
 			NAGIOS_STATE=CRITICAL
 			EXIT_CODE=2
-	elif [ ${TOTAL_COUNT} -eq ${IN_SERVICE_COUNT} ]; then
-			NAGIOS_STATE=OK
-			EXIT_CODE=0
-	elif [ ${IN_SERVICE_COUNT} -lt ${TOTAL_COUNT} ]; then
+	elif [[ ${IN_SERVICE_COUNT} -lt ${WARNING} ]]; then
 			NAGIOS_STATE=WARNING
 			EXIT_CODE=1
+	elif [[ ${IN_SERVICE_COUNT} -ge ${WARNING} ]]; then
+			NAGIOS_STATE=OK
+			EXIT_CODE=0
 	fi
-	echo "${NAGIOS_STATE}: ELB:${LB_NAME} Total:${TOTAL_COUNT} Healthy:${IN_SERVICE_COUNT} | Total=${TOTAL_COUNT} Healthy=${IN_SERVICE_COUNT}"
+	echo "${NAGIOS_STATE}: ELB:${LB_NAME} Total:${TOTAL_COUNT} Healthy:${IN_SERVICE_COUNT} Critical:${CRITICAL} Warning:${WARNING} | Total=${TOTAL_COUNT} Healthy=${IN_SERVICE_COUNT} Critical=${CRITICAL} Warning=${WARNING}"
 else
 	echo "Failed to retrieve ELB Instances health from AWS"
 	EXIT_CODE=99
