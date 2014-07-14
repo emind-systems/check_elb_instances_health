@@ -7,7 +7,7 @@ Usage:
 
   ./check_elb_instances_health]$ ./check_elb_instances.sh MyTestELB
 
-  Output: OK: ELB:AhaWSLB Total:5 Healthy:5 Critical:0 Warning:5 | Total=5 Healthy=5 Critical=0 Warning=5
+  Output: OK: ELB:MyTestELB Total:5 Healthy:5 Critical:0 Warning:5 | Total=5 Healthy=5 Critical=0 Warning=5
 
   .check_elb_instances_health]$ ./check_elb_instances.sh -w3 -c1 MyTestELB
 
