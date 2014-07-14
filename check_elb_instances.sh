@@ -6,6 +6,9 @@
 # Emind Systems DevOps Tool set is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 # Emind Systems DevOps Tool set is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 # You should have received a copy of the GNU General Public License along with Emind Systems DevOps Tool set. If not, see http://www.gnu.org/licenses/.
+function usage {
+	echo "Usage: $0 [-k <WS-AccessKeyId> -s <AWS-SecretKey> -r <AWS-Region> -w <waring> -c <critical>] <LB_NAME>"
+}
 while getopts "k:s:r:w:c:" arg; do
         case $arg in
         k)
@@ -25,7 +28,7 @@ while getopts "k:s:r:w:c:" arg; do
 	CRITICAL=$OPTARG
 	;;
         \?)
-        echo "Usage: $0 -k <WS-AccessKeyId> -s <AWS-SecretKey> -r <AWS-Region> <LB_NAME>"
+        usage
         exit 99
         ;;
       esac
@@ -35,7 +38,7 @@ LB_NAME=$1
 
 if [[ -z ${LB_NAME} ]]; then
         echo "Please specify the ELB name"
-        echo "Usage: $0 -k <WS-AccessKeyId> -s <AWS-SecretKey> -r <AWS-Region> <LB_NAME>"
+        usage
         exit 99
 fi
 
